@@ -1,21 +1,19 @@
-# Stage 1: install dependencies (only production deps here for speed)
+# Stage 1: dependencies (prefer deterministic install if lockfile exists)
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+COPY package.json package-lock.json* ./
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Stage 2: build (needs dev deps for Tailwind/Vite)
+# Stage 2: build
 FROM node:20-alpine AS build
 WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Install everything needed for build
-RUN npm ci
 ENV NODE_ENV=production
 RUN npm run build
 
-# Stage 3: serve static output with nginx
+# Stage 3: serve static output
 FROM nginx:stable-alpine AS release
-# Clear default content
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
