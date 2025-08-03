@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* subtle pulsing glow keyframes for buy button */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 15px rgba(3, 169, 244, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(3, 169, 244, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(3, 169, 244, 0.4);
+  }
+}
